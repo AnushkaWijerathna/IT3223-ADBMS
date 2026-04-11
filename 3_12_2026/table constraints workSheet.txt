@@ -1,0 +1,106 @@
+mysql> Create database customer_db;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> use customer_db
+Database changed
+mysql> CREATE TABLE CUSTOMERS (
+    ->  ID INT NOT NULL,
+    ->  NAME VARCHAR (20) NOT NULL,
+    ->  AGE INT NOT NULL,
+    ->  ADDRESS CHAR (25),
+    ->  SALARY DECIMAL (18, 2),
+    ->  PRIMARY KEY (ID)
+    -> )
+    -> ;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO CUSTOMERS (ID, NAME, AGE, ADDRESS, SALARY) VALUES
+    -> (1, 'Sunath', 30, 'Colombo', 2000.00),
+    -> (2, 'Kamal', 28, 'Jaffna', 1500.00),
+    -> (3, 'Mala', 25, 'Kandy', NULL),
+    -> (4, 'Manuja', 26, 'Gampaha', 6500.00),
+    -> (5, 'Kathees', 22, 'Anuradhapura', 8500.00),
+    -> (6, 'Anushi', 27, 'Vavuniya', NULL),
+    -> (7, 'Mahi', 28, 'Mahi', 10000.00);
+Query OK, 7 rows affected (0.04 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> SELECT NAME, ADDRESS, NULLIF(NAME, ADDRESS) AS Result FROM
+    -> CUSTOMERS;
++---------+--------------+---------+
+| NAME    | ADDRESS      | Result  |
++---------+--------------+---------+
+| Sunath  | Colombo      | Sunath  |
+| Kamal   | Jaffna       | Kamal   |
+| Mala    | Kandy        | Mala    |
+| Manuja  | Gampaha      | Manuja  |
+| Kathees | Anuradhapura | Kathees |
+| Anushi  | Vavuniya     | Anushi  |
+| Mahi    | Mahi         | NULL    |
++---------+--------------+---------+
+7 rows in set (0.01 sec)
+
+mysql> SELECT NAME, SALARY, IFNULL(SALARY, 5500) AS Result FROM
+    -> CUSTOMERS;
++---------+----------+----------+
+| NAME    | SALARY   | Result   |
++---------+----------+----------+
+| Sunath  |  2000.00 |  2000.00 |
+| Kamal   |  1500.00 |  1500.00 |
+| Mala    |     NULL |  5500.00 |
+| Manuja  |  6500.00 |  6500.00 |
+| Kathees |  8500.00 |  8500.00 |
+| Anushi  |     NULL |  5500.00 |
+| Mahi    | 10000.00 | 10000.00 |
++---------+----------+----------+
+7 rows in set (0.01 sec)
+
+mysql> CREATE TABLE CUSTOMERS_2 (
+    ->  ID INT NOT NULL,
+    ->  NAME VARCHAR (20) NOT NULL,
+    ->  AGE INT NOT NULL CHECK(AGE>=20),
+    ->  ADDRESS CHAR (25),
+    ->  SALARY DECIMAL (18, 2),
+    ->  PRIMARY KEY (ID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE CUSTOMERS_2 (
+    ->  ID INT NOT NULL,
+    ->  NAME VARCHAR (20) NOT NULL,
+    ->  AGE INT NOT NULL CHECK(AGE>=20),
+    ->  ADDRESS CHAR (25),
+    ->  SALARY DECIMAL (18, 2),
+    ->  PRIMARY KEY (ID)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> TRUNCATE TABLE CUSTOMERS;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> INSERT INTO CUSTOMERS VALUES
+    -> (1, 'Sunath', 30, 'Colombo', 2000.00),
+    -> (2, 'Kamal', 28, 'Jaffna', 1500.00),
+    -> (3, 'Mala', 25, 'Kandy', NULL),
+    -> (4, 'Manuja', 26, 'Gampaha', 6500.00),
+    -> (5, 'Kathees', 22, 'Anuradhapura', 8500.00),
+    -> (6, 'Anushi', 27, 'Vavuniya', NULL),
+    -> (7, 'Mahi', 28, 'Mahi', 10000.00);
+Query OK, 7 rows affected (0.01 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> SELECT table_name, constraint_type, constraint_name FROM
+    -> information_schema.table_constraints WHERE
+    -> table_name='CUSTOMERS_2';
++-------------+-----------------+-------------------+
+| TABLE_NAME  | CONSTRAINT_TYPE | CONSTRAINT_NAME   |
++-------------+-----------------+-------------------+
+| customers_2 | PRIMARY KEY     | PRIMARY           |
+| customers_2 | CHECK           | customers_2_chk_1 |
++-------------+-----------------+-------------------+
+2 rows in set (0.03 sec)
+
+mysql> INSERT INTO CUSTOMERS (ID, NAME, AGE, ADDRESS, SALARY) VALUES
+    -> (1, 'Mithilan', 15, 'Vanni', 2000.00);
+ERROR 1062 (23000): Duplicate entry '1' for key 'customers.PRIMARY'
+mysql>

@@ -1,0 +1,106 @@
+Answer the following questions on indexes:
+
+	1. Create an index on Quantity of the Shipment table.
+	
+mysql> CREATE INDEX qIndex ON Shipment (Quantity);
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+	
+	2. List down the indexes from Shipment table.
+	
+mysql> SHOW INDEX FROM Shipment;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| shipment |          0 | PRIMARY  |            1 | S_ID        | A         |           5 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| shipment |          0 | PRIMARY  |            2 | P_ID        | A         |          13 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| shipment |          0 | PRIMARY  |            3 | Pr_ID       | A         |          24 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| shipment |          1 | P_ID     |            1 | P_ID        | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| shipment |          1 | Pr_ID    |            1 | Pr_ID       | A         |           7 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| shipment |          1 | qIndex   |            1 | Quantity    | A         |           8 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+6 rows in set (0.01 sec)
+
+	3. Execute the following MySQL statement: explain select * from shipment where Quantity = 500;
+
+mysql> explain select * from shipment where Quantity = 500;
++----+-------------+----------+------------+------+---------------+--------+---------+-------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key    | key_len | ref   | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+--------+---------+-------+------+----------+-------------+
+|  1 | SIMPLE      | shipment | NULL       | ref  | qIndex        | qIndex | 5       | const |    4 |   100.00 | Using index |
++----+-------------+----------+------------+------+---------------+--------+---------+-------+------+----------+-------------+
+1 row in set, 1 warning (0.01 sec)
+	
+	4. Create an index on S_Name on the Suppliers table
+
+mysql> CREATE INDEX sIndex ON Suppliers(S_Name);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+	5. Create a composite index on P_Name and Colour of the Shipment table.
+
+mysql> CREATE INDEX cIndex ON Parts(P_Name,Colour);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+	6. Delete the index created in Question 1.
+
+
+mysql> DROP INDEX qIndex ON Shipment;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+	Consider the Hospital database created in the last practical and Create a single column index and a composite index for each of the tables
+
+mysql> USE Hospital;
+Database changed
+mysql> CREATE INDEX idx_doctor_specialisation
+    -> ON Doctor(Specialisation);
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_doctor_name_specialisation
+    -> ON Doctor(Name, Specialisation);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_patient_name
+    -> ON Patient(Name);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_patient_gender_birthdate
+    -> ON Patient(Gender, Birth_date);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_appointment_date
+    -> ON Appointment(Appointment_date);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_appointment_patient_doctor
+    -> ON Appointment(Patient_id, Doctor_id);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_treatment_cost
+    -> ON Treatment(Cost);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_treatment_appointment_cost
+    -> ON Treatment(Appointment_id, Cost);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_prescription_medicine
+    -> ON Prescription(Medicine);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_prescription_appointment_medicine
+    -> ON Prescription(Appointment_id, Medicine);
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+

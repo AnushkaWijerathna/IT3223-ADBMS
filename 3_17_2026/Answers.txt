@@ -1,0 +1,94 @@
+mysql> CREATE DATABASE HR;
+Query OK, 1 row affected (0.05 sec)
+
+mysql> USE HR;
+Database changed
+mysql>
+
+mysql> CREATE TABLE Location (
+    ->  Location_ID VARCHAR(10) NOT NULL PRIMARY KEY,
+    ->  City VARCHAR(50) DEFAULT 'Vavuniya'
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> CREATE TABLE Job_Details(
+    ->  Job_Id VARCHAR(10) NOT NULL PRIMARY KEY,
+    ->  Job_Title VARCHAR(100) NOT NULL,
+    ->  Min_Salary DECIMAL(10,2) CHECK (Min_Salary > 0) DEFAULT 5000,
+    ->  Max_Salary DECIMAL(10,2) CHECK (Max_Salary > 0) DEFAULT 100000
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE Department (
+    ->  Department_Id INT NOT NULL PRIMARY KEY,
+    ->  Department_name VARCHAR(100) DEFAULT 'HR',
+    ->  Manager_id INT NOT NULL,
+    ->  Location_Id INT NOT NULL
+    ->  );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE Employee (
+    ->  Employee_Id INT PRIMARY KEY,
+    ->  First_name VARCHAR(100) NOT NULL,
+    ->  Last_name VARCHAR(100) NOT NULL,
+    ->  Email VARCHAR(150) NOT NULL,
+    ->  Hire_date DATE,
+    ->  Salary DECIMAL(10,2) CHECK (Salary > 0),
+    ->  Job_Id VARCHAR(10),
+    ->  Department_Id INT,
+    ->  FOREIGN KEY (Job_Id) REFERENCES Job_Details(Job_Id),
+    ->  FOREIGN KEY (Department_Id) REFERENCES Department(Department_Id)
+    ->  );
+Query OK, 0 rows affected (0.04 sec)
+
+
+i. Replace all the null values on the Hire_date field of the employee table with 2008
+03-17 using IFNULL function. 
+
+	mysql> SELECT Employee_Id,Hire_date,IFNULL(Hire_date,'2008-03-17') FROM Employee;
+	+-------------+------------+--------------------------------+
+	| Employee_Id | Hire_date  | IFNULL(Hire_date,'2008-03-17') |
+	+-------------+------------+--------------------------------+
+	|         100 | 2003-06-17 | 2003-06-17                     |
+	|         102 | 2001-01-13 | 2001-01-13                     |
+	|         103 | 2006-01-03 | 2006-01-03                     |
+	|         105 | 2005-06-25 | 2005-06-25                     |
+	|         106 | 2006-02-05 | 2006-02-05                     |
+	|         108 | 2002-08-17 | 2002-08-17                     |
+	|         109 | 2002-08-16 | 2002-08-16                     |
+	|         110 | 2005-09-28 | 2005-09-28                     |
+	|         111 | 2005-09-30 | 2005-09-30                     |
+	|         112 | 2006-03-07 | 2006-03-07                     |
+	|         113 | 2007-12-07 | 2007-12-07                     |
+	|         114 | 2002-12-07 | 2002-12-07                     |
+	|         115 | 2003-05-18 | 2003-05-18                     |
+	|         116 | 2005-12-24 | 2005-12-24                     |
+	|         117 | 2005-07-24 | 2005-07-24                     |
+	|         118 | 2006-11-15 | 2006-11-15                     |
+	|         119 | 2007-08-10 | 2007-08-10                     |
+	|         120 | 2004-07-18 | 2004-07-18                     |
+	|         121 | 2005-04-10 | 2005-04-10                     |
+	|         122 | 2003-05-01 | 2003-05-01                     |
+	|         123 | 2005-10-10 | 2005-10-10                     |
+	|         124 | 2007-11-16 | 2007-11-16                     |
+	|         125 | 2005-07-16 | 2005-07-16                     |
+	+-------------+------------+--------------------------------+
+	23 rows in set (0.00 sec)
+
+ii. Check whether anyone has the same First_name and Last_name  in the employee 
+relation. 
+
+	mysql>  SELECT Employee_Id FROM Employee WHERE IFNULL(First_name,Last_name) IS NULL ;
+	Empty set (0.01 sec)
+
+iii. Check whether any job has the same max_salary and min_salary values in the 
+Job_Details relation. 
+
+	mysql> SELECT Job_Id FROM Job_Details WHERE IFNULL(Min_Salary,Max_Salary) IS NULL;
+	Empty set (0.00 sec)
+
+iv. Insert a record into the Job_Details table by passing the default values for minimum 
+and maximum salary.
+
+	mysql> INSERT INTO Job_details VALUES('NEW1', 'Head-cleaner', DEFAULT, DEFAULT);
+	Query OK, 1 row affected (0.01 sec)

@@ -1,0 +1,238 @@
+a).mysql> USE ORDERDETAILS;
+Database changed
+mysql> -- Customers table
+mysql> CREATE TABLE Customers (
+    ->     CustomerID INT PRIMARY KEY,
+    ->     Name VARCHAR(100) NOT NULL,
+    ->     City VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql>
+mysql> -- Products table
+mysql> CREATE TABLE Products (
+    ->     ProductID INT PRIMARY KEY,
+    ->     ProductName VARCHAR(100) NOT NULL,
+    ->     Price DECIMAL(10,2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> -- Orders table
+mysql> CREATE TABLE Orders (
+    ->     OrderID INT PRIMARY KEY,
+    ->     CustomerID INT NOT NULL,
+    ->     OrderDate DATE NOT NULL,
+    ->     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> -- OrderDetails table (with OrderDetailsID added)
+mysql> CREATE TABLE OrderDetails (
+    ->     OrderDetailsID INT PRIMARY KEY,
+    ->     OrderID INT NOT NULL,
+    ->     ProductID INT NOT NULL,
+    ->     Quantity INT NOT NULL,
+    ->     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    ->     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> -- Payments table
+mysql> CREATE TABLE Payments (
+    ->     PaymentID INT PRIMARY KEY,
+    ->     OrderID INT NOT NULL,
+    ->     AmountPaid DECIMAL(10,2) NOT NULL,
+    ->     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+b,1).
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE customer_details(IN in_customerID INT)
+    -> BEGIN
+    ->   SELECT CustomerID, Name, City
+    ->   FROM Customers
+    ->   WHERE CustomerID = in_customerID;
+    -> END $$
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL customer_details(4);
++------------+------+--------+
+| CustomerID | Name | City   |
++------------+------+--------+
+|          4 | Amal | Jaffna |
++------------+------+--------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+2).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE get_orders(IN in_customerID INT)
+    -> BEGIN
+    ->  SELECT * FROM Orders WHERE CustomerID = in_customerID;
+    -> END $$
+Query OK, 
+
+mysql> CALL get_orders(1);
++---------+------------+------------+
+| OrderID | CustomerID | OrderDate  |
++---------+------------+------------+
+|       1 |          1 | 2024-01-01 |
+|      11 |          1 | 2024-01-11 |
++---------+------------+------------+
+2 rows in set (0.02 sec)
+
+Query OK, 0 rows affected (0.03 sec)
+
+3).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE get_products(IN in_productID INT)
+    -> BEGIN
+    -> SELECT * FROM Products WHERE productid = in_productID;
+    -> END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL get_products(4)
+    -> ;
++-----------+-------------+----------+
+| ProductID | ProductName | Price    |
++-----------+-------------+----------+
+|         4 | Monitor     | 30000.00 |
++-----------+-------------+----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+
+4)
+DELIMITER $$
+CREATE PROCEDURE getPayments(IN in_orderID INT)
+ BEGIN
+ SELECT  OrderID,AmountPaid FROM Payments
+ WHERE orderID = in_orderID;
+ END $$
+DELIMITER ;
+
+mysql> CALL getPayments(7);
++---------+------------+
+| OrderID | AmountPaid |
++---------+------------+
+|       7 |   14000.00 |
++---------+------------+
+1 row in set (0.00 sec)
+
+5).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE details(IN in_city VARCHAR(100))
+    ->  BEGIN
+    ->  SELECT CustomerID, Name, City FROM customers
+    ->  WHERE in_city = city;
+    ->  END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CALL details('Kandy');
++------------+--------+-------+
+| CustomerID | Name   | City  |
++------------+--------+-------+
+|          2 | Kamal  | Kandy |
+|          8 | Kumari | Kandy |
++------------+--------+-------+
+2 rows in set (0.00 sec)
+
+6).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE getProducts(IN in_price INT)
+    ->  BEGIN
+    ->  SELECT ProductID, ProductName, Price FROM Products
+    ->  WHERE price > in_price;
+    ->  END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL getProducts(80000);
++-----------+-------------+-----------+
+| ProductID | ProductName | Price     |
++-----------+-------------+-----------+
+|         1 | Laptop      | 150000.00 |
+|         7 | Phone       | 120000.00 |
+|         9 | Camera      |  90000.00 |
++-----------+-------------+-----------+
+3 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+7).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE byDate(IN in_date DATE)
+    ->  BEGIN
+    ->  SELECT  OrderID,OrderDate FROM Orders
+    ->  WHERE OrderDate = in_date;
+    ->  END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  CALL byDate('2024-01-10');
++---------+------------+
+| OrderID | OrderDate  |
++---------+------------+
+|      10 | 2024-01-10 |
++---------+------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+08).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE byProductId(IN in_ProductID INT)
+    ->  BEGIN
+    ->  SELECT   OrderID, Quantity FROM OrderDetails
+    ->  WHERE ProductID = in_ProductID;
+    ->  END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> CALL byProductId(8);
++---------+----------+
+| OrderID | Quantity |
++---------+----------+
+|       7 |        2 |
++---------+----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+09).
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE byAmount(IN in_amount INT)
+    ->  BEGIN
+    ->  SELECT * FROM Payments
+    ->  WHERE AmountPaid > in_amount;
+    ->  END $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL byAmount(18000);
++-----------+---------+------------+
+| PaymentID | OrderID | AmountPaid |
++-----------+---------+------------+
+|         1 |       1 |  152000.00 |
+|         3 |       3 |   30000.00 |
+|         4 |       4 |   25000.00 |
+|         5 |       5 |   80000.00 |
+|         6 |       6 |  120000.00 |
+|         8 |       8 |   90000.00 |
+|        11 |      11 |   20000.00 |
++-----------+---------+------------+
+7 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+10).

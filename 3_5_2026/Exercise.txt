@@ -1,0 +1,171 @@
+	1. List all doctors. 
+
+mysql> SELECT * FROM Doctor;
++-----------+-----------------------+------------------+--------------+
+| Doctor_id | Name                  | Specialisation   | Phone        |
++-----------+-----------------------+------------------+--------------+
+|         1 | Dr. John Doe          |  Cardiology      | 021-222-1234 |
+|         2 |  Dr. Sarah Smith      |  Neurology       | 021-222-2345 |
+|         3 |  Dr. James Brown      |  Pediatrics      | 021-222-3456 |
+|         4 |  Dr. Lisa White       |  Orthopedics     | 021-222-4567 |
+|         5 |  Dr. Michael Black    |  Dermatology     | 021-222-5678 |
+|         6 |  Dr. Emily Green      |  General         | 021-222-6789 |
+|         7 |  Dr. Daniel Lee       |  Cardiology      | 021-222-7890 |
+|         8 |  Dr. Linda Clark      |  Neurology       | 021-222-8901 |
+|         9 |  Dr. Steven Turner    |  Pediatrics      | 021-222-9012 |
+|        10 |  Dr. Jessica Martinez |  Orthopedics     | 021-222-0123 |
++-----------+-----------------------+------------------+--------------+
+10 rows in set (0.00 sec)
+
+	2. List all patients who are female. 
+
+mysql> SELECT * FROM Patient WHERE Gender = 'Female';
++------------+----------------+------------+--------+--------------+
+| Patient_id | Name           | Birth_date | Gender | Address      |
++------------+----------------+------------+--------+--------------+
+|          1 | Alice Johnson  | 1985-05-12 | Female | 123 Elm St   |
+|          4 | Diana Wilson   | 1975-09-14 | Female | 101 Maple St |
+|          5 | Eve Moore      | 1982-04-19 | Female | 202 Birch St |
+|          7 | Grace Clark    | 1989-12-25 | Female | 404 Pine St  |
+|          9 | Irene Robinson | 1983-06-22 | Female | 606 Oak St   |
++------------+----------------+------------+--------+--------------+
+5 rows in set (0.01 sec)
+
+	3. Get all appointments for patient with `patient_id` = 3. 
+
+mysql> SELECT * FROM Appointment WHERE Patient_id = 3;
++----------------+------------+-----------+------------------+-----------+
+| Appointment_id | Patient_id | Doctor_id | Appointment_date | Status    |
++----------------+------------+-----------+------------------+-----------+
+|              3 |          3 |         5 | 2026-04-12       | Scheduled |
++----------------+------------+-----------+------------------+-----------+
+1 row in set (0.04 sec)
+
+	4. List all treatments with their costs. 
+	
+mysql> SELECT Treatment_id,Cost FROM Treatment;
++--------------+--------+
+| Treatment_id | Cost   |
++--------------+--------+
+|            1 | 150.00 |
+|            2 | 300.00 |
+|            3 | 100.00 |
+|            4 | 200.00 |
+|            5 |  50.00 |
+|            6 | 800.00 |
+|            7 | 300.00 |
+|            8 | 150.00 |
+|            9 | 100.00 |
+|           10 | 200.00 |
++--------------+--------+
+10 rows in set (0.00 sec)
+
+	5. Get the total cost of treatments for patient with `patient_id` = 2. 
+
+mysql> SELECT SUM(t.Cost) AS Total_Treatment_Cost
+    -> FROM Treatment t
+    -> JOIN Appointment a ON t.Appointment_id = a.Appointment_id
+    -> JOIN Patient p ON a.Patient_id = p.Patient_id
+    -> WHERE P.Patient_id = 2;
++----------------------+
+| Total_Treatment_Cost |
++----------------------+
+|               300.00 |
++----------------------+
+1 row in set (0.00 sec)
+
+	6. Get the details of doctors who specialize in "Cardiology". 
+	
+mysql> SELECT Doctor_id,Name,Phone FROM Doctor WHERE Specialisation = 'Cardiology';
++-----------+----------------------+--------------+
+| Doctor_id | Name                 | Phone        |
++-----------+----------------------+--------------+
+|         1 | Dr. John Doe         | 021-222-1234 |
+|         7 |  Dr. Daniel Lee      | 021-222-7890 |
++-----------+----------------------+--------------+
+2 rows in set (0.00 sec)
+
+	7. List appointments scheduled after `2025-04-15`. 
+	
+mysql> SELECT * FROM Appointment WHERE Appointment_date > '2025-04-15';
++----------------+------------+-----------+------------------+-----------+
+| Appointment_id | Patient_id | Doctor_id | Appointment_date | Status    |
++----------------+------------+-----------+------------------+-----------+
+|              1 |          1 |         2 | 2026-04-10       | Scheduled |
+|              2 |          2 |         1 | 2026-04-15       | Scheduled |
+|              3 |          3 |         5 | 2026-04-12       | Scheduled |
+|              4 |          4 |         3 | 2026-04-20       | Scheduled |
+|              5 |          5 |         2 | 2026-04-18       | Scheduled |
+|              6 |          6 |         4 | 2026-04-25       | Scheduled |
+|              7 |          7 |         6 | 2026-04-17       | Scheduled |
+|              8 |          8 |         7 | 2026-04-22       | Scheduled |
+|              9 |          9 |         8 | 2026-04-14       | Scheduled |
+|             10 |         10 |         9 | 2026-04-24       | Scheduled |
++----------------+------------+-----------+------------------+-----------+
+10 rows in set (0.01 sec)
+
+	8. Find the most recent appointment for patient `1`. 
+
+mysql> SELECT * FROM Appointment WHERE patient_id = 1
+    -> ORDER BY Appointment_date DESC
+    -> LIMIT 1;
++----------------+------------+-----------+------------------+-----------+
+| Appointment_id | Patient_id | Doctor_id | Appointment_date | Status    |
++----------------+------------+-----------+------------------+-----------+
+|              1 |          1 |         2 | 2026-04-10       | Scheduled |
++----------------+------------+-----------+------------------+-----------+
+1 row in set (0.00 sec)
+
+	9. List all patients who have a scheduled appointment with a doctor specializing in 
+	"Neurology". 
+
+mysql> SELECT a.Patient_id FROM Appointment a
+    -> JOIN Doctor d ON a.Doctor_id = d.Doctor_id
+    -> WHERE Specialisation = 'Neurology';
++------------+
+| Patient_id |
++------------+
+|          1 |
+|          5 |
+|          9 |
++------------+
+3 rows in set (0.00 sec)
+
+	10. Get all treatments that cost more than `200`. 
+	
+mysql> SELECT *
+    -> FROM Treatment
+    -> WHERE Cost > 200;
++--------------+----------------+------------------+--------+
+| Treatment_id | Appointment_id | Description      | Cost   |
++--------------+----------------+------------------+--------+
+|            2 |              2 |  MRI             | 300.00 |
+|            6 |              6 |  Surgery         | 800.00 |
+|            7 |              7 |  MRI             | 300.00 |
++--------------+----------------+------------------+--------+
+3 rows in set (0.00 sec)
+
+	11. List all doctors with their total number of appointments. 
+	12. Get the most commonly prescribed medication. 
+	13. Find all patients who were born before `1990-01-01`. 
+	14. List all prescriptions for the appointment with `appointment_id` = 6. 
+	15. Find the average cost of treatments per appointment. 
+	16. Get all patients who have been prescribed "Ibuprofen". 
+	17. List all treatments and the patients they were given to. 
+	18. Get the total number of treatments provided. 
+	19. Get the names of doctors who have treated patient `1`. 
+	20. List down the medicines and dosage prescribed for the patient with patient id 7. 
+	21. Update the cost for X-ray to 300 and list the records of the view created in 
+	Question 4. State your observation on the X-ray cost. 
+	22. Insert a new record into the doctor table with the following values: 
+	11  
+	Dr. Smith Sebastian    
+	Orthopedics     
+	021-222-4433 
+	Describe your observation when selecting all the records from the view created 
+	in Question 1. 
+	23. Delete a record from the view created in Question 4 and describe your 
+	observation while listing down all the records from that view. 
+	24. List down all the views created by you for the hospital database.  
+	25. Delete the view created for Question 20 and list down all the views created by 
+	you again.     
